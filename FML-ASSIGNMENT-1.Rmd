@@ -1,0 +1,74 @@
+---
+title: "FML_ASSIGNMENT-1"
+author: "Rohit Raj Naik Banoth"
+date: "2024-02-05"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r} 
+library(readxl)
+dataset1 <- read.csv("C:/Users/banot/OneDrive/Desktop/fml-1/BankChurners.csv")
+View(dataset1)
+```
+
+#printing the descriptive Statistics
+```{r}
+summary(dataset1)
+```
+#Printing the Quantitative Varaibles
+```{r}
+mean(dataset1$Credit_Limit)
+```
+```{r}
+median(dataset1$Months_on_book)
+```
+
+```{r}
+summary(dataset1$Total_Revolving_Bal)
+```
+# Printing the Qualitative Variables
+```{r}
+summary(dataset1$Marital_Status)
+```
+```{r}
+summary(dataset1$Education_Level) 
+```
+
+# Printing the transformation of customers age input
+```{r}
+# Assuming df is your data frame
+dataset1$Transformed_Age <- sqrt(dataset1$Customer_Age)
+
+# Print the first few rows to see the changes
+head(dataset1)
+
+```
+
+```{r}
+hist(dataset1$Customer_Age,xlab ="Customer_Age",ylab ="Income_Category",main ="Histogram of Age",col ="green")
+
+```
+
+```{r}
+# Assuming dataset1 is your data frame
+barplot(table(dataset1$Attrition_Flag),
+        main = "Barplot of Attrition_Flag",
+        xlab = "Attrition_Flag",
+        ylab = "Frequency",
+        col = "lightblue")  # Optional: Set the color of the bars
+
+```
+
+```{r}
+# Assuming df is your data frame
+plot(dataset1$Customer_Age, dataset1$Credit_Limit,
+     main = "Scatterplot of Customer Age vs. Credit Limit",
+     xlab = "Customer Age",
+     ylab = "Credit Limit",
+     col = "blue")  # Optional: Set the color of the points
+
+```
