@@ -1,0 +1,140 @@
+---
+title: "FML_A3_rbanoth_Universal_bank_df"
+author: "Rohit Raj Naik Banoth"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Loading the required Packages
+```{r}
+library(dplyr)
+library(ISLR)
+library(e1071)
+library(caret)
+library(class)
+library(ggplot2)
+library(tidyr)
+library(gmodels)
+library(lattice)
+```
+
+#Loading the Universal bank data and summary of it
+```{r}
+unibank.df <- read.csv("C:/Users/banot/Downloads/UniversalBank.csv")
+summary(unibank.df)
+```
+#converting the varaibles by using factors.
+```{r}
+unibank.df$Personal.Loan <- factor(unibank.df$Personal.Loan)
+unibank.df$Online <- factor(unibank.df$Online)
+unibank.df$CreditCard <- factor(unibank.df$CreditCard)
+```
+
+#lets perform the given tasks from here.
+#set the seed also create a data partation of 60% training and remaining as validation
+```{r}
+set.seed(123)
+Train.index <- createDataPartition(unibank.df$Personal.Loan,p = 0.6,list = FALSE)
+train.df <- unibank.df[Train.index,]
+validation.df <- unibank.df[-Train.index,]
+```
+
+#With Online as a column variable, CC as a row variable, and Loan as a secondary row variable, create a pivot table for the training data.
+```{r}
+P.table <- xtabs(~ CreditCard + Online + Personal.Loan,data = train.df)
+ftable(P.table)
+```
+#Consider how about the difficulty of categorizing a client who regularly uses online banking services and possesses a bank credit card. How likely is it that this customer will accept the loan offer based on the pivot table? [This is the likelihood that a loan will be approved (Loan = 1) provided that you have a bank credit card (CC = 1) and use online banking frequently (Online = 1)].
+```{r}
+probabality = 51/(51+467)
+probabality
+```
+#For the training set, make two distinct pivot tables. In one, Loan (rows) will depend on Online (columns), whereas in the other, Loan (rows) will depend on CC..
+```{r}
+table(Personal.Loan = train.df$Personal.Loan, Online = train.df$Online)
+table(Personal.Loan = train.df$Personal.Loan, CreditCard = train.df$CreditCard)
+table(Personal.Loan = train.df$Personal.Loan)
+```
+#consider p as probablity
+#Compute the following quantities [P(A | B) means “the probability of A given B”]:
+
+#i. P(CC = 1 | Loan = 1) (the proportion of credit card holders among the loan #acceptors)
+
+```{r}
+p1 <- 84/(84+204)
+p1
+```
+#ii. P(Online = 1 | Loan = 1)
+```{r}
+p2 <- 176/(176+112)
+p2
+```
+#iii. P(Loan = 1) (the proportion of loan acceptors)
+```{r}
+p3 <- 288/(288+2712)
+p3
+
+```
+#iv. P(CC = 1 | Loan = 0)
+```{r}
+p4 <- 777/(777+1935)
+p4
+```
+#v. P(Online = 1 | Loan = 0)
+```{r}
+p5 <- 1611/(1611+1101)
+p5
+```
+#vi. P(Loan = 0)
+```{r}
+p6 <- 2712/(2712+288)
+p6
+```
+#Task5
+#To calculate the naive Bayes probability P, use the amounts that were previously computed.(Credit #=1, Online = 1; Loan = 1).
+```{r}
+computed_probablity <- (p1 * p2 * p3)/((p1 * p2 * p3) + (p4 * p5 * p6))
+computed_probablity
+```
+#This value and the one derived from the pivot table in (B) should be compared. Which estimate is more accurate?
+#The values we obtained from questions 2 and 5—0.0984556 and 0.1000861, respectively—were nearly identical. The naive bayes approach does not require the exact same independent variable categorization for prediction, but the exact method must. This is the only distinction between the two methods. We are able to verify that the value obtained from question 2 is more precise. Given that we extracted the precise numbers from the pivot table,.
+
+#Which of the following table entries is required in order to calculate P(Loan = 1 | CC = 1, Online = 1)?
+#Using the data, run naive Bayes. Locate the entry number corresponding to P(Loan = 1 | CC = 1, Online = 1) by looking through the model output on training data. This should be compared to the number you received in (E)..
+```{r}
+naviebayes.model <- naiveBayes(Personal.Loan ~ Online + CreditCard, data = train.df)
+to.predict = data.frame(Online=1, CreditCard= 1)
+predict(naviebayes.model, to.predict,type = 'raw')
+
+```
+#The result obtained from job 5 is 0.1000861, and the value obtained from question 7 is 0.09206369. # the outcome nearly matches what we obtained from Task 5. # The rounding results in a very slight change. #The distinction won't affect the output's rank order.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
